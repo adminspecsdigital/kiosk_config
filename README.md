@@ -78,6 +78,7 @@ Após a instalação do sistema operacional e tendo acessado o prompt de termina
 ## Autores
 
 * **Adminstrador Specs Digital** - (https://github.com/adminspecsdigital)
+* **Edison Junior** 
 
 ## Agradecimentos
 
