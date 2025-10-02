@@ -1,91 +1,85 @@
-# Ubuntu Server 18.04 Kiosk Chrome
+# Specs Digital Ubuntu Server Kiosk Mode
 
- 
+## Iniciando
 
-## Getting Started
+Este documento lhe fornecerá instruções para a instalação do Ubuntu Server rodando ambiente gráfico em modo Kiosk, contando com o uso de telas sensíveis ao toque.
 
-This document will give you an instruction on how to setup a chrome kiosk ubuntu
+### Pré Requisitos
 
-### Prerequisites
+Tenha certeza de que instalou estes pré requisitos
 
-Make sure you have installed the following prerequisites
+Nota: Instalando o Ubuntu Server há o requerimento de uma conexão com a internet para que seja possível instalar os pacotes necessários ao funcionamento do modo kiosk após a instalação do sistema operacional.
 
-Note: Installing Ubuntu Server 18.04 required an internet connection 
-for you to able to install a required package, create a "kiosk" user, this user will
-be use in the setup later
+* Ubuntu Server - [Download](https://ubuntu.com/download/server)
 
-* Ubuntu Server 18.04 - [Download](https://ubuntu.com/download/server/thank-you?version=18.04.4&architecture=amd64)
-* Setup for Ubuntu Server - [Video](https://www.youtube.com/watch?v=XXsrECecr5M)
+### Passos
 
+Após a instalação do sistema operacional e tendo acessado o prompt de terminal execute os seguintes passos
 
-### Steps
-
-* After you successfully installed the Ubuntu Server 18.04 need to install the following package, the 4th line
-is a wifi setup wherein the SSID is the name of your WIFI and password is the password of your wifi, you can skip
-the command below if you are using LAN.
+* Baixando o conteúdo deste repositório 
         
     ```
-    sudo apt install network-manager
-    sudo systemctl enable NetworkManager
-    sudo service NetworkManager start
-    sudo nmcli dev wifi con <SSID> password <password>
+    git clone https://github.com/adminspecsdigital/kiosk_config.git
     ```
-* Install required packages
+* Executando os scripts de instalação de gerenciador de rede para conexão com redes wifi (se houver conexão via cabo pode considerar este passo opcional)
 
     ````
-    sudo add-apt-repository 'deb http://dl.google.com/linux/chrome/deb/ stable main'
-    wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-  
-    sudo apt update
-    sudo apt install --no-install-recommends xorg openbox google-chrome-stable pulseaudio xserver-xorg-legacy
-  
-    sudo usermod -a -G audio $USER
+    cd kiosk_config
+    sh ./install-network-manager.sh
     ````  
   
-* Installing kiosk script and rotation script, this script will open a chrome browser
-    * Run the command below, it will clear a chrome session and configuration and load the 
-    chrome browser
-    
-    ````
-    sudo cp kiosk.sh /opt/
-    sudo chmod +x /opt/kiosk.sh
-    ````
-    
-    * Modify the /etc/X11/Xwrapper.config
-    ````
-    sudo sed -i 's/allowed_users=console/allowed_users=anybody/' /etc/X11/Xwrapper.config
-    echo "needs_root_rights=yes" | sudo tee -a /etc/X11/Xwrapper.config
+* Instalação do ambiente gráfico
 
-
-* Update Grub
-    * Modify the /etc/default/grub
     ````
-    sudo cp grub /etc/default/grub
-    sudo update-grub
+    sh ./setup.sh
     ````
-  
-    * Enable tty2 and tty3
+    Durante o processo você será questionado sobre a orientação da tela. As opções são:
+
+    * normal (opção padrão, orientação em modo paisagem)
+    * right (orientação em modo retrato rotacionado à esquerda)
+    * left (orientação em modo retrato rotacionado à direita)
+    * inverted (orientação em modo paisagem invertido)
+
+    Salientando que se houver um dispositivo touch atrelado ao display, sua matriz será ajustada para trabalhar de acordo com a orientação.
+
+    Após este passo será habilitado automaticamente o modo gráfico, executando o Google Chrome em modo kiosk para o site do Specs Digital. 
+
+* Ajustes
+
+    * Modificando a Orientação
+
+    Modifique o arquivo /opt/kiosk.sh 
     ````
-    sudo systemctl enable getty@tty2 getty@tty3
+    sudo nano /opt/kiosk.sh
     ````
-  
-* Start kiosk service, run the command below
+    Na segunda linha temos: 
     ````
-    sudo cp kiosk.service /etc/systemd/system/
-    sudo systemctl enable kiosk.service
-    sudo systemctl start kiosk.service
+    ROTATION=normal
     ````
+    Troque o termo "normal", por aquele que for mais conveniente de acordo com o expressado anteriormente. Salve o arquivo e reinicie a máquina.
 
-### Video Tutorial
-https://youtu.be/cLiX62QhB9U
+    * Modifique a aplicação que está sendo carregada
+    Modifique o arquivo /opt/kiosk.sh 
+    ````
+    sudo nano /opt/kiosk.sh
+    ````
+    no trecho:
+    ````
+    while true; do
+        #
+        # Substituir os comandos abaixo pela chamada da aplicação do cliente
+        # 
+        rm -rf ~/.{config,cache}/google-chrome/
+        google-chrome --kiosk --no-first-run  'https://github.com/wlabesamis'
+    done
+    ````
+    substitua as linas sem comentários pela chamada de seu aplicativo
 
+## Autores
 
-## Authors
+* **Adminstrador Specs Digital** - (https://github.com/adminspecsdigital)
 
-* **WLABESAMIS** - (https://github.com/wlabesamis)
+## Agradecimentos
 
-
-## Acknowledgments
-
-* Thank you to THEPCSPY
-* **THEPCSPY** - (https://thepcspy.com/read/building-a-kiosk-computer-ubuntu-1404-chrome/)
+* Thank you to Wilson Abesamis
+* **Wilson Abesamis** - (https://github.com/wlabesamis)
