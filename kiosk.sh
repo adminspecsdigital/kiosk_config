@@ -1,27 +1,40 @@
 #!/bin/bash
 ROTATION=normal
 
+# Inicia X se não estiver rodando
 if ! pgrep -x Xorg > /dev/null; then
     xinit -- :0 &
-    while ! xdpyinfo -display :0 >/dev/null 2>&1; do 
-      sleep 1; 
-    done
 fi
 
 export DISPLAY=:0
 
+# Aguarda X ficar pronto
+until xset q >/dev/null 2>&1; do
+    echo "⏳ Aguardando servidor X..."
+    sleep 1
+done
+
+# Desativa suspensão de tela
 xset -dpms
 xset s off
-openbox-session &
-start-pulseaudio-x11
 
-# Executa o script de rotação antes de abrir a aplicação
+# Inicia openbox como WM
+openbox-session &
+
+# Som (caso use pulseaudio)
+command -v start-pulseaudio-x11 >/dev/null && start-pulseaudio-x11
+
+# Rotaciona tela
 /opt/rotate-screen.sh "$ROTATION"
 
+# Loop da aplicação
 while true; do
-  #
-  # Substituir os comandos abaixo pela chamada da aplicação do cliente
-  # 
-  rm -rf ~/.{config,cache}/google-chrome/
-  google-chrome --kiosk --no-first-run  'https://github.com/adminspecsdigital/kiosk_config'
+    # limpa apenas cache (não remove configs)
+    rm -rf ~/.cache/google-chrome/
+
+    # inicia chrome em modo kiosk
+    google-chrome --kiosk --no-first-run 'https://github.com/wlabesamis'
+
+    # espera antes de reiniciar em caso de crash/fechamento
+    sleep 2
 done
