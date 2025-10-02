@@ -25,8 +25,12 @@ echo "needs_root_rights=yes" | sudo tee -a /etc/X11/Xwrapper.config
 sudo systemctl enable getty@tty1 getty@tty2 getty@tty3
 
 #Update Grub
-sudo cp grub /etc/default/grub
-sudo update-grub
+if [ -f grub ]; then
+    sudo cp grub /etc/default/grub
+    sudo update-grub
+else
+    echo "Arquivo grub não encontrado. Pulei essa etapa."
+fi
 
 # install kiosh service
 sudo cp kiosk.sh /opt/
