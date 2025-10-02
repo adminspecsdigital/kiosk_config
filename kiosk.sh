@@ -3,7 +3,7 @@ ROTATION=normal
 
 # Inicia X se não estiver rodando
 if ! pgrep -x Xorg > /dev/null; then
-    xinit -- :0 &
+    xinit /usr/bin/openbox-session -- :0 &
 fi
 
 export DISPLAY=:0
@@ -17,9 +17,6 @@ done
 # Desativa suspensão de tela
 xset -dpms
 xset s off
-
-# Inicia openbox como WM
-openbox-session &
 
 # Som (caso use pulseaudio)
 command -v start-pulseaudio-x11 >/dev/null && start-pulseaudio-x11
