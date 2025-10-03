@@ -2,9 +2,9 @@
 ROTATION=normal
 
 # Inicia X se não estiver rodando
-if ! pgrep -x Xorg > /dev/null; then
-    xinit /usr/bin/openbox-session -- :0 &
-fi
+#if ! pgrep -x Xorg > /dev/null; then
+#    xinit /usr/bin/openbox-session -- :0 
+#fi
 
 export DISPLAY=:0
 

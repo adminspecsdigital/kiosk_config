@@ -1,11 +1,27 @@
 [Unit]
 Description=Kiosk Launcher
-After=systemd-user-sessions.service
+After=systemd-user-sessions.service getty@tty1.service
+Wants=graphical.target
 
 [Service]
 User=kiosk
-ExecStart=/usr/bin/startx /opt/kiosk.sh -- :1 vt1
+Environment=DISPLAY=:0
+
+# Chama o seu script normalmente
+ExecStart=/usr/bin/xinit /opt/kiosk.sh -- :0 vt1 -keeptty -novtswitch
+
+# Garante que o serviço não caia se o script "demorar"
+Type=simple
+TimeoutStartSec=0
+
+# Se o Chrome ou algo do script fechar, relança
 Restart=always
+RestartSec=5
+
+TTYPath=/dev/tty1
+StandardInput=tty
+StandardOutput=journal
+StandardError=journal
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=graphical.target

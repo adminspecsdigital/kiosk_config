@@ -12,7 +12,7 @@ sudo apt update -y
 
 sudo apt install -y --no-install-recommends google-chrome-stable
 sudo apt install -y --no-install-recommends xorg openbox pulseaudio xserver-xorg-legacy
-sudo apt install -y --no-install-recommends xinput xserver-xorg-input-all
+sudo apt install -y --no-install-recommends xinput xserver-xorg-input-all xserver-xorg-video-all
 sudo apt install -y --no-install-recommends libsecret-1-0 libmpv2
 
 sudo usermod -a -G audio $USER
