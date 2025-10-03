@@ -1,37 +1,41 @@
 #!/bin/bash
+export DISPLAY=:0
+export XAUTHORITY=/home/kiosk/.Xauthority
+
+LOGFILE=/var/log/kiosk-app.log
 ROTATION=normal
 
-# Inicia X se não estiver rodando
-#if ! pgrep -x Xorg > /dev/null; then
-#    xinit /usr/bin/openbox-session -- :0 
-#fi
+echo "=== Iniciando kiosk.sh === $(date)" >> "$LOGFILE" 2>&1
 
-export DISPLAY=:0
-
-# Aguarda X ficar pronto
+# Espera o X estar ativo
 until xset q >/dev/null 2>&1; do
-    echo "⏳ Aguardando servidor X..."
+    echo "⏳ Aguardando servidor X..." >> "$LOGFILE"
     sleep 1
 done
 
-# Desativa suspensão de tela
+# Configura tela
 xset -dpms
 xset s off
+xset s noblank
 
-# Som (caso use pulseaudio)
-command -v start-pulseaudio-x11 >/dev/null && start-pulseaudio-x11
+# Inicia openbox (apenas se não já estiver rodando)
+pgrep -x openbox >/dev/null || openbox-session &
 
-# Rotaciona tela
-/opt/rotate-screen.sh "$ROTATION"
+# Ajusta rotação (se necessário)
+if [ -x /opt/rotate-screen.sh ]; then
+    /opt/rotate-screen.sh "$ROTATION" >> "$LOGFILE" 2>&1
+fi
 
 # Loop da aplicação
 while true; do
-    # limpa apenas cache (não remove configs)
-    rm -rf ~/.cache/google-chrome/
+    echo "▶️ Iniciando aplicação $(date)" >> "$LOGFILE"
 
-    # inicia chrome em modo kiosk
-    google-chrome --kiosk --no-first-run 'https://github.com/wlabesamis'
+    # Se quiser rodar Chrome:
+    google-chrome --kiosk --no-first-run 'https://github.com/wlabesamis' >> "$LOGFILE" 2>&1
 
-    # espera antes de reiniciar em caso de crash/fechamento
-    sleep 2
+    # Se quiser rodar sua app:
+    # /opt/app/app >> "$LOGFILE" 2>&1 
+
+    echo "⚠️ Aplicação caiu, reiniciando em 3s..." >> "$LOGFILE"
+    sleep 3
 done
