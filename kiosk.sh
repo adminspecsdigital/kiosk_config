@@ -31,7 +31,7 @@ while true; do
     echo "▶️ Iniciando aplicação $(date)" >> "$LOGFILE"
 
     # Se quiser rodar Chrome:
-    google-chrome --kiosk --no-first-run 'https://github.com/wlabesamis' >> "$LOGFILE" 2>&1
+    google-chrome --kiosk --no-first-run 'https://github.com/adminspecsdigital/kiosk_config' >> "$LOGFILE" 2>&1
 
     # Se quiser rodar sua app:
     # /opt/app/app >> "$LOGFILE" 2>&1 
